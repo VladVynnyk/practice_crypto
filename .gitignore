@@ -1,0 +1,11 @@
+/venv
+/.idea
+/__pycache__/
+/crypto-tracker/__pycache__/
+/crypto-tracker/api/__pycache__/
+/crypto-tracker/api/models/__pycache__/
+/crypto-tracker/api/models/__pycache__/
+/crypto-tracker/api/models/pydantic_models/__pycache__/
+/crypto-tracker/config/__pycache__/
+/migrations/versions/__pycache__/
+/tests/__pycache__/
