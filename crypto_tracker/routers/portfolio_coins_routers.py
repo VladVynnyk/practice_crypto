@@ -1,20 +1,15 @@
 import sys
 sys.path.append("..")
-import datetime
 from fastapi import APIRouter
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-
-from crypto_tracker.daos.users_dao import UsersDAO
-# from .daos.users_dao import UsersDAO
+from crypto_tracker.daos.portfolio_coins_dao import PortfolioCoinsDAO
 from crypto_tracker.config.settings import get_settings
 
 #It's will be temporary imports
 from crypto_tracker.config.database import PortfolioCoin
 from crypto_tracker.api.models.pydantic_models.models import PortfolioCoinSchema
 
-Db_uri = get_settings().db_uri
+DB_URI = get_settings().db_uri
 
 portfolio_coins_router = APIRouter(
     prefix="/portfolio-coins",
@@ -24,50 +19,37 @@ portfolio_coins_router = APIRouter(
 #Url for this routes must be like this: "/portfolios/{id}/coins{id}"
 @portfolio_coins_router.get("/")
 def get_portfolio_coins():
-    Session = scoped_session(
-        sessionmaker(bind=create_engine(Db_uri)))
-    with Session() as session:
-        portfolioCoins = session.query(PortfolioCoin).all()
-        return portfolioCoins
+    portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
+    portfolio_coins = portfolio_coins_dao.get_all_portfolio_coins()
+    return portfolio_coins
 
 @portfolio_coins_router.get("/{id}")
-def get_portfolio_coin(id:int):
-    Session = scoped_session(
-        sessionmaker(bind=create_engine(Db_uri)))
-    with Session() as session:
-        portfolioCoin = session.query(PortfolioCoin).where(PortfolioCoin.id == id).first()
-        return portfolioCoin
+def get_portfolio_coin(portfolio_coin_id: int):
+    portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
+    portfolio_coin = portfolio_coins_dao.get_portfolio_coin_by_id(portfolio_coin_id)
+    return portfolio_coin
+
 
 
 @portfolio_coins_router.post("/")
-def add_portfolio_coin(portfolioCoin: PortfolioCoinSchema):
-    portfolioCoin_for_insert = PortfolioCoin(portfolio_id=portfolioCoin.portfolio_id, coin_id=portfolioCoin.coin_id,
-                                             amount=portfolioCoin.amount, created_at=portfolioCoin.created_at)
-    Session = scoped_session(
-        sessionmaker(bind=create_engine(Db_uri)))
-    with Session() as session:
-        session.add(portfolioCoin_for_insert)
-        session.commit()
-    return portfolioCoin
+def add_portfolio_coin(portfolio_coin: PortfolioCoinSchema):
+    portfolioCoin_for_insert = PortfolioCoin(portfolio_id=portfolio_coin.portfolio_id, coin_id=portfolio_coin.coin_id,
+                                             amount=portfolio_coin.amount, created_at=portfolio_coin.created_at)
+    portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
+    inserted_portfolio_coin = portfolio_coins_dao.create_portfolio_coin(portfolioCoin_for_insert)
+    return inserted_portfolio_coin
 
 @portfolio_coins_router.patch("/{id}")
-def patch_portfolio_coin(id: int, portfolioCoin: PortfolioCoinSchema):
-    Session = scoped_session(
-        sessionmaker(bind=create_engine(Db_uri)))
-    with Session() as session:
-        session.query(PortfolioCoin).where(PortfolioCoin.id == id).update(portfolioCoin.dict())
-        session.commit()
-    return portfolioCoin
+def patch_portfolio_coin(portfolio_coin_id: int, updated_portfolio_coin: PortfolioCoinSchema):
+    portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
+    portfolio_coin_to_update = portfolio_coins_dao.patch_portfolio_coin(portfolio_coin_id, updated_portfolio_coin.dict())
+    return portfolio_coin_to_update
+
+
 
 @portfolio_coins_router.delete("/{id}")
-def delete_portfolio_coin(id: int):
-    Session = scoped_session(
-        sessionmaker(bind=create_engine(Db_uri)))
-    with Session() as session:
-        query = session.query(PortfolioCoin).where(PortfolioCoin.id==id)
-        portfolio_coin = query.first()
-        if not portfolio_coin:
-            return {"message": "PortfolioCoin not found"}
-        session.delete(portfolio_coin)
-        session.commit()
-    return {"message": "PortfolioCoin deleted"}
+def delete_portfolio_coin(portfolio_coin_id: int):
+    portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
+    portfolio_for_delete = portfolio_coins_dao.get_portfolio_coin_by_id(portfolio_coin_id)
+    obj_to_delete = portfolio_coins_dao.delete_portfolio_coin(portfolio_for_delete)
+    return obj_to_delete

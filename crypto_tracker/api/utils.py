@@ -42,10 +42,13 @@ TModelType = TypeVar("TModelType")
 def cache(function: callable) -> callable:
     cache_dict = {}
     count_of_calls = 0
+    print("Cache: ", cache_dict)
 
+    @wraps(function)
     def wrapper(*args):
         nonlocal count_of_calls
         count_of_calls += 1
+        print(cache_dict)
         if count_of_calls >= 5:
             cache_dict.clear()
             count_of_calls = 0
@@ -54,9 +57,11 @@ def cache(function: callable) -> callable:
         else:
             result = function(*args)
             cache_dict[args] = result
+            print("result: ", result)
             return result
 
     return wrapper
+
 
 def cache_first_n_calls(n):
     def decorator(func):
@@ -80,3 +85,58 @@ def cache_first_n_calls(n):
 
     return decorator
 
+
+def cache_first_n_calls_v2(n: int):
+    def decorator(function: callable) -> callable:
+        cache_dict = {}
+        count_of_calls = 0
+
+        # print("count: ", count_of_calls)
+        # print("cache: ", cache_dict)
+
+        def wrapper(*args):
+            nonlocal count_of_calls
+            print("count: ", count_of_calls)
+            print("cache: ", cache_dict)
+            count_of_calls += 1
+            if count_of_calls >= n:
+                cache_dict.clear()
+                count_of_calls = 0
+            if args in cache_dict:
+                return cache_dict[args]
+            else:
+                result = function(*args)
+                cache_dict[args] = result
+                return result
+
+        return wrapper
+
+    return decorator
+
+
+def cache_first_n_calls_v3(n: int):
+    def decorator(function: callable) -> callable:
+        cache_dict = {}
+        count_of_calls = 0
+
+        # print("count: ", count_of_calls)
+        # print("cache: ", cache_dict)
+        @wraps(function)
+        def wrapper(*args):
+            nonlocal count_of_calls
+            print("count: ", count_of_calls)
+            print("cache: ", cache_dict)
+            count_of_calls += 1
+            if count_of_calls >= n:
+                cache_dict.clear()
+                count_of_calls = 0
+            if args in cache_dict:
+                return cache_dict[args]
+            else:
+                result = function(*args)
+                cache_dict[args] = result
+                return result
+
+        return wrapper
+
+    return decorator

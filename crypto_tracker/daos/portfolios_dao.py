@@ -4,15 +4,14 @@ from sqlalchemy import select, update
 from sqlalchemy.sql.selectable import Select
 from sqlalchemy.exc import OperationalError
 
-from crypto_tracker.api.utils import row_to_dict
 from crypto_tracker.clients.db_client import DBClient
-from crypto_tracker.config.database import Coin
-from crypto_tracker.api.models.pydantic_models.models import CoinSchema
+from crypto_tracker.config.database import Portfolio
+from crypto_tracker.api.models.pydantic_models.models import PortfolioSchema
 
 logger = logging.getLogger(__name__)
 
 
-class CoinsDAO:
+class PortfoliosDAO:
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -23,31 +22,31 @@ class CoinsDAO:
     def __init__(self, uri: str):
         self._db_client = DBClient(uri)
 
-    def get_coin_by_id(self, coin_id: int) -> CoinSchema | None:
-        query = select(Coin).where(Coin.id == coin_id)
-        return self._get_one_coin_by_query(query)
+    def get_portfolio_by_id(self, coin_id: int) -> PortfolioSchema | None:
+        query = select(Portfolio).where(Portfolio.id == coin_id)
+        return self._get_one_portfolio_by_query(query)
 
-    def get_coin_for_operation(self, coin_id: int)-> CoinSchema | None:
-        query = select(Coin).where(Coin.id == coin_id)
+    def get_portfolio_for_operation(self, coin_id: int)-> PortfolioSchema | None:
+        query = select(Portfolio).where(Portfolio.id == coin_id)
         return self._db_client.select_one_object_for_operation(query)
 
-    def get_all_coins(self) -> CoinSchema | None:
-        query = select(Coin)
-        return self._get_all_coins(query)
+    def get_all_portfolios(self) -> PortfolioSchema | None:
+        query = select(Portfolio)
+        return self._get_all_portfolios(query)
 
-    def create_coin(self, coin: Coin) -> CoinSchema | None:
+    def create_portfolio(self, coin: Portfolio) -> PortfolioSchema | None:
         return self._db_client.create_object(coin)
 
-    def patch_coin(self, coin_id: int, updated_coin: dict[str, any]) -> CoinSchema | None:
+    def patch_portfolio_coin(self, portfolio_id: int, updated_portfolio: dict[str, any]) -> PortfolioSchema | None:
         # todo: check for unique fields ?
         # todo: is it a bug: DB records does not get updated when the same info passed several times?
-        query = update(Coin).where(Coin.id == coin_id).values(ticker=updated_coin['ticker'], fullName=updated_coin['fullName']).returning(Coin.id, Coin.fullName, Coin.ticker)
+        query = update(Portfolio).where(Portfolio.id == portfolio_id).values(user_id=updated_portfolio['user_id'], name=updated_portfolio['name'], created_at=updated_portfolio['created_at']).returning(Portfolio.id, Portfolio.name, Portfolio.user_id, Portfolio.name)
         return self._db_client.update_object(query)
 
-    def delete_coin(self, coin: Coin) -> CoinSchema | None:
+    def delete_portfolio(self, coin: Portfolio) -> PortfolioSchema | None:
         return self._db_client.delete_object(coin)
 
-    def _get_one_coin_by_query(self, query: Select) -> CoinSchema | None:
+    def _get_one_portfolio_by_query(self, query: Select) -> PortfolioSchema | None:
         try:
             return self._db_client.select_one_object_by_query(query)
 
@@ -57,7 +56,7 @@ class CoinsDAO:
             print(e)
             raise OperationalError("Operational error: ", str(e), str(e.orig))
 
-    def _get_all_coins(self, query: Select) -> CoinSchema | None:
+    def _get_all_portfolios(self, query: Select) -> PortfolioSchema | None:
         try:
             return self._db_client.select_all_objects(query)
 
