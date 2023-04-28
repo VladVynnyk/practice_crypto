@@ -140,3 +140,39 @@ def cache_first_n_calls_v3(n: int):
         return wrapper
 
     return decorator
+
+
+def cache_response(func):
+    """
+    Decorator that caches the response of a FastAPI async function.
+
+    Example:
+    ```
+        app = FastAPI()
+
+        @app.get("/")
+        @cache_response
+        async def example():
+            return {"message": "Hello World"}
+    ```
+    """
+    response = []
+    count_of_calls = 0
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        nonlocal count_of_calls
+        count_of_calls+=1
+        nonlocal response
+        count_of_calls_divided = count_of_calls % 5
+
+        # if count_of_calls_divided != 0:
+        # if count_of_calls <= 5:
+        if not response:
+            response = func(*args, **kwargs)
+            print("Saved")
+        return response
+        # else:
+        #     response.clear()
+        #     print("List cleared")
+    return wrapper

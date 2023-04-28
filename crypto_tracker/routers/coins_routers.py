@@ -10,7 +10,7 @@ from crypto_tracker.daos import CoinsDAO
 #It's temporary imports
 from crypto_tracker.config.database import Coin
 from crypto_tracker.api.models.pydantic_models.models import CoinSchema
-from crypto_tracker.api.utils import cache, cache_first_n_calls, cache_first_n_calls_v2, cache_first_n_calls_v3
+from crypto_tracker.api.utils import cache, cache_first_n_calls, cache_first_n_calls_v2, cache_first_n_calls_v3, cache_response
 
 db_uri = get_settings().db_uri
 
@@ -26,17 +26,17 @@ def add_coin(coin: CoinSchema):
     created_coin = coins_dao.create_coin(coin_for_insert)
     return created_coin
 
-@cache_first_n_calls(5)
 @coins_router.get("/")
+@cache_response
 def get_coins():
     coins_dao = CoinsDAO(uri=db_uri)
     coins = coins_dao.get_all_coins()
     # print("Coins: ", coins)
     return coins
 
-
-@cache
+# @cache
 @coins_router.get("/{id}")
+@cache_response
 def get_coin(coin_id: int):
     coins_dao = CoinsDAO(uri=db_uri)
     coin = coins_dao.get_coin_by_id(coin_id)
