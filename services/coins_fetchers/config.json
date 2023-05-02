@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "URL": "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map",
+      "apikey": "05a86d4a-c0f4-42f3-bfce-fb9f72438ec3",
+      "fetcherType": ""
+    }
+  ]
+}

@@ -6,9 +6,9 @@
 /crypto-tracker/api/models/__pycache__/
 /crypto-tracker/api/models/pydantic_models/__pycache__/
 /crypto-tracker/config/__pycache__/
-/migrations/versions/__pycache__/
-/tests/__pycache__/
-/migrations/__pycache__/
-/crypto_tracker/.coverage
-/crypto_tracker/tests/htmlcov/
-/crypto_tracker/tests/.coverage
+/services/crypto_tracker/migrations/versions/__pycache__/
+/services/crypto_tracker/tests/__pycache__/
+/services/crypto_tracker/migrations/__pycache__/
+/services/crypto_tracker/.coverage
+/services/crypto_tracker/tests/htmlcov/
+/services/crypto_tracker/tests/.coverage
