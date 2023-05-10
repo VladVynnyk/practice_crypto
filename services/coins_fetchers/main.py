@@ -4,6 +4,7 @@ from fetchers import CoinFetcher
 
 from services.coins_fetchers.utils import insert_coins
 
+
 # def main():
 #     config = read_config()
 #     fetchers = get_fetchers(config)
@@ -15,10 +16,12 @@ from services.coins_fetchers.utils import insert_coins
 
 def main():
     coin_fetcher = CoinFetcher('config.json')
-    coins = coin_fetcher.fetch_all_coins()
+    coins = coin_fetcher.fetch_all_coins(10)
 
-    print("COINS: ", coins['data'])
+    # print("COINS: ", coins['data'])
 
-    insert_coins(coins['data'], 20)
+    # insert_coins(coins['data'], 20)
 
-main()
+
+if __name__ == "__main__":
+    main()

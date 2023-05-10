@@ -1,37 +1,31 @@
 from abc import ABC, abstractmethod
+from typing import List
+
 import requests
 
 from services.coins_fetchers.model import CoinDetails
 
-from utils import read_json_file
+from utils import read_json_file, convert_config_to_dataclass
 
 
 # class CoinFetcher(ABC):
 class Fetcher(ABC):
-    # @abstractmethod
-    # def fetch_coin(self, config: ) -> CoinDetails:
-    #     raise NotImplementedError()
 
     @abstractmethod
-    def fetch_coin(self, config: dict) -> CoinDetails:
-        # raise NotImplementedError()
-        pass
+    def fetch_all_coins(self) -> CoinDetails:
+        raise NotImplementedError("This method needs to be implemented")
 
-    @abstractmethod
-    def fetch_all_coins(self, config: dict) -> CoinDetails:
-        # raise NotImplementedError()
-        pass
 
 class CoinFetcher(Fetcher):
     def __init__(self, filename: str) -> None:
-        self.config = read_json_file(filename)
+        self.config = convert_config_to_dataclass()
 
-    def fetch_coin(self, config: dict) -> CoinDetails:
-        pass
-
-    def fetch_all_coins(self) -> CoinDetails:
+    def fetch_all_coins(self, amount_of_coins) -> List[CoinDetails]:
         print("CONFIG: ", self.config)
-        url = self.config['sources'][0]['URL']
-        headers = {"X-CMC_PRO_API_KEY": self.config['sources'][0]['apikey']}
-        request = requests.get(url, headers=headers)
+        url = self.config.sources[0].URL
+        # it's for limit amount of coins
+        limited_url = url + f'?limit={amount_of_coins}'
+        print("Limited url " + limited_url)
+        headers = {"X-CMC_PRO_API_KEY": self.config.sources[0].apikey}
+        request = requests.get(limited_url, headers=headers)
         return request.json()
