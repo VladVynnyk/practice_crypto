@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("../..")
 from datetime import datetime
 from fastapi import APIRouter
@@ -16,6 +17,7 @@ portfolios_router = APIRouter(
     prefix="/portfolios",
 )
 
+
 # CRUD for "portfolio" table
 @portfolios_router.get("/")
 def get_portfolios():
@@ -24,12 +26,20 @@ def get_portfolios():
     return portfolios
 
 
-
 @portfolios_router.get("/{id}")
 def get_portfolio(portfolio_id: int):
     portfolio_dao = PortfoliosDAO(uri=DB_URI)
     portfolio = portfolio_dao.get_portfolio_by_id(portfolio_id)
-    return portfolio
+
+    response = {"portfolio_id": portfolio[0].id, "user_id": portfolio[0].user_id, "name": portfolio[0].name}
+    return response
+
+
+@portfolios_router.get("/user/{id}")
+def get_portfolios_by_user(user_id: int):
+    portfolio_dao = PortfoliosDAO(uri=DB_URI)
+    portfolios = portfolio_dao.get_portfolio_by_user_id(user_id)
+    return portfolios
 
 
 @portfolios_router.post("/")

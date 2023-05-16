@@ -9,6 +9,12 @@ class CoinDetails:
     name: str
     rate: Decimal
 
+@dataclass
+class CoinPrice:
+    fullName: str
+    ticker: str
+    current_price: float
+
 
 @dataclass
 class FetcherConfig:

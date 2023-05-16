@@ -12,6 +12,7 @@ from services.crypto_tracker.src.routers.portfolio_coins_routers import portfoli
 
 app = FastAPI()
 
+
 app.include_router(users_router)
 app.include_router(coins_router)
 app.include_router(portfolios_router)

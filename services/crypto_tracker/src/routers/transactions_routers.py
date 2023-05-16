@@ -1,6 +1,7 @@
 import sys
 
 sys.path.append("../..")
+import requests
 from datetime import datetime
 from fastapi import APIRouter
 
@@ -27,10 +28,21 @@ def get_transactions():
 
 
 @transactions_router.get("/{id}")
-def get_transaction(transaction_id: int):
+def get_transaction_by_id(transaction_id: int):
     transactions_dao = TransactionsDAO(uri=DB_URI)
     transaction = transactions_dao.get_transaction_by_id(transaction_id)
-    return transaction
+
+    response = {"portfolio_id": transaction[0].portfolio_id, "coin_id": transaction[0].coin_id,
+                "transaction_type": transaction[0].transaction_type, "amount": transaction[0].amount,
+                "price": transaction[0].price, "created_at": transaction[0].created_at}
+    return response
+
+
+@transactions_router.get("/portfolio/{id}")
+def get_transactions_by_portfolio_id(portfolio_id: int):
+    transactions_dao = TransactionsDAO(uri=DB_URI)
+    transactions = transactions_dao.get_transactions_by_portfolio_id(portfolio_id)
+    return transactions
 
 
 @transactions_router.post("/")
@@ -39,8 +51,28 @@ def add_transaction(transaction: TransactionSchema):
                                          transaction_type=transaction.transaction_type, amount=transaction.amount,
                                          price=transaction.price, created_at=datetime.now())
     transaction_dao = TransactionsDAO(uri=DB_URI)
-    transaction = transaction_dao.create_transaction(transaction_for_insert)
-    return transaction
+    inserted_transaction = transaction_dao.create_transaction(transaction_for_insert)
+
+    if transaction.transaction_type == "BUY" or "Buy" or "buy":
+        body_for_request_to_portfolio_coins = {
+            'portfolio_id': transaction.portfolio_id,
+            'coin_id': transaction.coin_id,
+            'amount': transaction.amount
+        }
+
+        request = requests.post("http://127.0.0.1:8000/portfolio-coins/", json=body_for_request_to_portfolio_coins)
+        print(request.json())
+
+    # elif transaction.transaction_type == "SELL" or "Sell" or "sell":
+        # Logic for transaction
+        # request_for_initial_price = requests.get(f"http://127.0.0.1:8000/portfolio-coins/{}")
+        # body_for_request_to_patch_portfolio_coins = {
+        #     'portfolio_id': transaction.portfolio_id,
+        #     'coin_id': transaction.coin_id,
+        #     'amount': transaction.amount
+        # }
+        # request = requests.patch(f"http://127.0.0.1:8000/portfolio-coins/{transaction.coin_id}", json=)
+    return inserted_transaction
 
 
 @transactions_router.patch("/{id}")

@@ -5,6 +5,11 @@ class UserSchema(BaseModel):
     email: str
     password: str
 
+class UserSchemaRegister(BaseModel):
+    username: str
+    email: str
+    password: str
+    confirmed_password: str
 
 class PortfolioSchema(BaseModel):
     user_id: int
@@ -12,6 +17,7 @@ class PortfolioSchema(BaseModel):
 
 
 class CoinSchema(BaseModel):
+    id: int
     ticker: str
     fullName: str
 
@@ -28,3 +34,4 @@ class TransactionSchema(BaseModel):
     transaction_type: str
     amount: float
     price: float
+

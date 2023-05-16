@@ -13,8 +13,8 @@ TQueryType = TypeVar("TQueryType")
 
 
 class DBClient:
-    _ERROR_MSG_TEMPLATE: str = 'Failed to {operation} coin. Error: {e}'
-    _UNEXPECTED_ERROR_MSG_TEMPLATE: str = 'Unexpected error. Failed to {operation} coin. Error: {e}'
+    _ERROR_MSG_TEMPLATE: str = 'Failed to {operation} obj. Error: {e}'
+    _UNEXPECTED_ERROR_MSG_TEMPLATE: str = 'Unexpected error. Failed to {operation} object. Error: {e}'
 
     def __init__(self, uri: str) -> None:
         self._engine = create_engine(uri)
@@ -32,9 +32,9 @@ class DBClient:
                 result = session.execute(query)
                 row = result.fetchone()
                 if row:
-                    response = {"ticker": row[0].ticker, "fullName": row[0].fullName}
-                    return response
-                    # return row[0]
+                    # response = {"id": row[0].id, "ticker": row[0].ticker, "fullName": row[0].fullName}
+                    # return response
+                    return row
 
         except (ProgrammingError, DatabaseError) as e:
             error_msg = self._ERROR_MSG_TEMPLATE.format(operation='SELECT', e=e)

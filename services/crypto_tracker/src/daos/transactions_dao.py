@@ -29,9 +29,9 @@ class TransactionsDAO:
         query = select(Transaction).where(Transaction.id == transaction_id)
         return self._get_one_transaction_by_query(query)
 
-    def get_transaction_for_operation(self, transaction_id: int) -> TransactionSchema | None:
-        query = select(Transaction).where(Transaction.id == transaction_id)
-        return self._db_client.select_one_object_for_operation(query)
+    def get_transactions_by_portfolio_id(self, portfolio_id: int) -> TransactionSchema | None:
+        query = select(Transaction).where(Transaction.portfolio_id == portfolio_id)
+        return self._get_all_transactions(query)
 
     def get_all_transactions(self) -> TransactionSchema | None:
         query = select(Transaction)

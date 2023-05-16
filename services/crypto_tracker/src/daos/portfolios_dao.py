@@ -28,9 +28,9 @@ class PortfoliosDAO:
         query = select(Portfolio).where(Portfolio.id == coin_id)
         return self._get_one_portfolio_by_query(query)
 
-    def get_portfolio_for_operation(self, coin_id: int)-> PortfolioSchema | None:
-        query = select(Portfolio).where(Portfolio.id == coin_id)
-        return self._db_client.select_one_object_for_operation(query)
+    def get_portfolio_by_user_id(self, user_id: int)-> PortfolioSchema | None:
+        query = select(Portfolio).where(Portfolio.user_id == user_id)
+        return self._get_all_portfolios(query)
 
     def get_all_portfolios(self) -> PortfolioSchema | None:
         query = select(Portfolio)

@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 
 sys.path.append("../..")
 from fastapi import APIRouter
@@ -30,13 +31,22 @@ def get_portfolio_coins():
 def get_portfolio_coin(portfolio_coin_id: int):
     portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
     portfolio_coin = portfolio_coins_dao.get_portfolio_coin_by_id(portfolio_coin_id)
-    return portfolio_coin
+
+    response = {"portfolio_id": portfolio_coin[0].portfolio_id, "coin_id": portfolio_coin[0].coin_id,
+                "amount": portfolio_coin[0].amount, "created_at": portfolio_coin[0].created_at}
+    return response
+
+@portfolio_coins_router.get("/portfolio/{id}")
+def get_portfolio_coins_by_portfolio_id(portfolio_id: int):
+    portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
+    portfolio_coins = portfolio_coins_dao.get_portfolio_coins_by_portfolio_id(portfolio_id)
+    return portfolio_coins
 
 
 @portfolio_coins_router.post("/")
 def add_portfolio_coin(portfolio_coin: PortfolioCoinSchema):
     portfolioCoin_for_insert = PortfolioCoin(portfolio_id=portfolio_coin.portfolio_id, coin_id=portfolio_coin.coin_id,
-                                             amount=portfolio_coin.amount, created_at=portfolio_coin.created_at)
+                                             amount=portfolio_coin.amount, created_at=datetime.now())
     portfolio_coins_dao = PortfolioCoinsDAO(uri=DB_URI)
     inserted_portfolio_coin = portfolio_coins_dao.create_portfolio_coin(portfolioCoin_for_insert)
     return inserted_portfolio_coin

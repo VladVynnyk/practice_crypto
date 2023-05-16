@@ -29,6 +29,10 @@ class UsersDAO:
         query = select(User).where(User.id == user_id)
         return self._get_one_user_by_query(query)
 
+    def get_user_by_username(self, username: str) -> UserSchema | None:
+        query = select(User).where(User.username == username)
+        return self._get_one_user_by_query(query)
+
     def get_user_for_operation(self, user_id: int)-> UserSchema | None:
         query = select(User).where(User.id == user_id)
         return self._db_client.select_one_object_for_operation(query)

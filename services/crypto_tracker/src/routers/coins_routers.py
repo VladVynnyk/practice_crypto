@@ -40,16 +40,17 @@ def get_coins():
     return coins
 
 
-
 @coins_router.get("/{id}")
 # @cache_response
 def get_coin(coin_id: int) -> CoinSchema:
     coins_dao = CoinsDAO(uri=db_uri)
     coin = coins_dao.get_coin_by_id(coin_id)
-    print("COIN: ", coin)
-    return coin
 
+    response = {"id": coin[0].id, "ticker": coin[0].ticker, "fullName": coin[0].fullName}
+    return response
 
+def get_coins_by_():
+    pass
 
 @coins_router.patch("/{id}")
 def update_coin(coin_id: int, updated_coin: CoinSchema) -> CoinSchema:

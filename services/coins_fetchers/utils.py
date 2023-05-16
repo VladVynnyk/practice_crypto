@@ -1,7 +1,13 @@
 
 import json
+import secrets
+
 import requests
-from typing import List
+from typing import List, Annotated
+
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBasicCredentials
+from starlette import status
 
 from model import ConfigSource, Config
 
@@ -19,7 +25,7 @@ def read_json_file(filename: str) -> dict:
 #     return sources
 
 
-# Function for inserting data into table coin
+# Function for inserting data into table "Coin"
 # def insert_coins(coins: List, amount_of_elements: int) -> None:
 #     i = 0
 #     for coin in coins:
@@ -40,7 +46,6 @@ def read_json_file(filename: str) -> dict:
 #             break
 
 
-# also to params in this function I can give only coins:List which is sliced only to 20 elements
 def insert_coins(coins: List) -> None:
     for coin in coins:
         payload = {
@@ -52,8 +57,8 @@ def insert_coins(coins: List) -> None:
 
 
 # Function, which creates dataclasses from config.json
-def convert_config_to_dataclass()->List[ConfigSource]:
-    config = read_json_file('config.json')
+def convert_config_to_dataclass(filename: str)->List[ConfigSource]:
+    config = read_json_file(filename)
     list_of_sources = []
     for item in config['sources']:
         print("item", item)
@@ -64,3 +69,36 @@ def convert_config_to_dataclass()->List[ConfigSource]:
     all_config = Config(sources=list_of_sources)
     print("conf sources: ", all_config.sources[0].URL)
     return all_config
+
+
+def create_requests_to_crypto_api_v2(user_id: int):
+    current_user = requests.get(f"http://127.0.0.1:8000/users/{user_id}")
+    existing_portfolios = requests.get("http://127.0.0.1:8000/portfolios/user/{id}?user_id="+f"{user_id}")
+    # print("PORTFOLIOS: ", existing_portfolios.json())
+    if len(existing_portfolios.json()) == 0:
+        return {"message": f'{current_user.username}, you must to create portfolio'}
+    else:
+        coins = []
+        for portfolio in existing_portfolios.json():
+            # coins_in_portfolio = requests.get(f"http://127.0.0.1:8000/transactions/portfolio/{portfolio.id}")
+            coins_in_portfolio = requests.get("http://127.0.0.1:8000/portfolio-coins/portfolio/{id}?portfolio_id="+f"{portfolio['id']}")
+            coins.append(coins_in_portfolio.json())
+    print("COINS: ", coins)
+
+    return coins
+
+
+# Function, which creates request to /coins/{id} to fetch ticker or fullName of crypto
+def get_tickers_for_coins(coins: dict)->list:
+    tickers_for_coins = []
+    for coin in coins:
+        request_for_ticker_and_fullName = requests.get("http://127.0.0.1:8000/coins/{id}?coin_id="+f"{coin['coin_id']}")
+        tickers_for_coins.append(request_for_ticker_and_fullName.json())
+
+    return tickers_for_coins
+
+# Function for calculating PNL
+def calculate_pnl_for_portfolio(current_data: list, previous_data: list):
+    for item in current_data:
+        print(item)
+    pass

@@ -29,9 +29,9 @@ class PortfolioCoinsDAO:
         query = select(PortfolioCoin).where(PortfolioCoin.id == portfolio_coin_id)
         return self._get_one_portfolio_coin_by_query(query)
 
-    def get_portfolio_coin_for_operation(self, portfolio_coin_id: int) -> PortfolioCoinSchema | None:
-        query = select(PortfolioCoin).where(PortfolioCoin.id == portfolio_coin_id)
-        return self._db_client.select_one_object_for_operation(query)
+    def get_portfolio_coins_by_portfolio_id(self, portfolio_id: int) -> PortfolioCoinSchema | None:
+        query = select(PortfolioCoin).where(PortfolioCoin.portfolio_id == portfolio_id)
+        return self._get_all_portfolio_coins(query)
 
     def get_all_portfolio_coins(self) -> PortfolioCoinSchema | None:
         query = select(PortfolioCoin)
