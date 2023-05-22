@@ -172,3 +172,38 @@ def all_coins()->List:
     "fullName": "string"
   }
 ]
+
+
+@pytest.fixture(scope="session")
+def all_transactions()->List:
+    return [
+      [
+        {
+          "transaction_type": "BUY",
+          "id": 1,
+          "price": 20000,
+          "portfolio_id": 1,
+          "coin_id": 1,
+          "amount": 1,
+          "created_at": "2023-05-20T08:21:28.918310"
+        },
+        {
+          "transaction_type": "buy",
+          "id": 2,
+          "price": 20000,
+          "portfolio_id": 1,
+          "coin_id": 1,
+          "amount": 1,
+          "created_at": "2023-05-20T08:31:01.805462"
+        },
+        {
+          "transaction_type": "buy",
+          "id": 3,
+          "price": 20000,
+          "portfolio_id": 1,
+          "coin_id": 1,
+          "amount": 1,
+          "created_at": "2023-05-20T08:34:48.924140"
+        }
+      ]
+]

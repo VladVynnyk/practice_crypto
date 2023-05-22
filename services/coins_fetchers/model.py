@@ -23,7 +23,7 @@ class FetcherConfig:
 
 @dataclass
 class ConfigSource:
-    URL: str
+    url: str
     apikey: str
     fetcherType: str
 

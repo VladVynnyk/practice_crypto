@@ -56,8 +56,8 @@ class TestCoinsDAO:
             assert result == {"Success": "Object added"}
 
     def test_patch_coin(self):
-        with patch.object(DBClient, 'update_object', return_value={"ticker": "ETH", "fullName": "Ethereum"}):
-            updated_coin = CoinSchema(ticker="ETH", fullName="Ethereum")
+        with patch.object(DBClient, 'update_object', return_value={"id": 2, "ticker": "ETH", "fullName": "Ethereum"}):
+            updated_coin = CoinSchema(id=2, ticker="ETH", fullName="Ethereum")
             coin_id = 1
             coins_dao = CoinsDAO(uri=self.DB_URI)
             result = coins_dao.patch_coin(coin_id, updated_coin.dict())

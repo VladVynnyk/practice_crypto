@@ -1,13 +1,16 @@
 import secrets
 import sys
+from datetime import datetime
 
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette import status
 from typing_extensions import Annotated
 
-sys.path.append("../../..")
+from services.crypto_tracker.src.middleware import auth
+
+# sys.path.append("../../..")
 from fastapi import APIRouter, Depends, HTTPException
-from datetime import datetime
+from fastapi.security.api_key import APIKey
 
 from services.crypto_tracker.src.daos.users_dao import UsersDAO
 from services.crypto_tracker.src.settings import get_settings
@@ -50,14 +53,14 @@ users_router = APIRouter(
 
 # CRUD for "user" table
 @users_router.get("/")
-def get_users():
+def get_users(api_key: APIKey = Depends(auth.get_api_key)):
     users_dao = UsersDAO(uri=DB_URI)
     users = users_dao.get_all_users()
     return users
 
 
 @users_router.get("/{id}")
-def get_user(user_id: int):
+def get_user(user_id: int, api_key: APIKey = Depends(auth.get_api_key)):
     users_dao = UsersDAO(uri=DB_URI)
     user = users_dao.get_user_by_id(user_id)
 
@@ -67,7 +70,7 @@ def get_user(user_id: int):
 
 
 @users_router.post("/")
-def add_user(user: UserSchemaRegister):
+def add_user(user: UserSchemaRegister, api_key: APIKey = Depends(auth.get_api_key)):
     # also in this endpoint must be check if user is not repeated
     if user.password == user.confirmed_password:
         user_for_insert = User(username=user.username, email=user.email, password=user.password,
@@ -80,7 +83,7 @@ def add_user(user: UserSchemaRegister):
 
 
 @users_router.post("/log_in")
-def log_in_for_user(user: UserSchema):
+def log_in_for_user(user: UserSchema, api_key: APIKey = Depends(auth.get_api_key)):
     # logic: 1) we are checking in database for user with specific username
     # 2) we are finding this user with username and checking his password
     # 3) if password isn't correct or username not found we must return message about error
@@ -102,7 +105,7 @@ def log_in_for_user(user: UserSchema):
 
 # but for deleting and updating user must be param id in this functions
 @users_router.delete("/{id}")
-def delete_user(user_id: int):
+def delete_user(user_id: int, api_key: APIKey = Depends(auth.get_api_key)):
     users_dao = UsersDAO(uri=DB_URI)
     user_for_delete = users_dao.get_user_by_id(user_id)
     obj_to_delete = users_dao.delete_user(user_for_delete)
@@ -110,7 +113,7 @@ def delete_user(user_id: int):
 
 
 @users_router.patch("/{id}")
-def patch_user(user_id: int, updated_user: UserSchema):
+def patch_user(user_id: int, updated_user: UserSchema, api_key: APIKey = Depends(auth.get_api_key)):
     users_dao = UsersDAO(uri=DB_URI)
     user_to_update = users_dao.patch_user(user_id, updated_user.dict())
     return user_to_update

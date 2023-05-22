@@ -8,6 +8,7 @@ from services.crypto_tracker.src.routers.coins_routers import coins_router
 from services.crypto_tracker.src.routers.portfolios_routers import portfolios_router
 from services.crypto_tracker.src.routers.transactions_routers import transactions_router
 from services.crypto_tracker.src.routers.portfolio_coins_routers import portfolio_coins_router
+from services.crypto_tracker.src.routers.fetchers_routers import fetchers_router
 
 
 app = FastAPI()
@@ -18,6 +19,7 @@ app.include_router(coins_router)
 app.include_router(portfolios_router)
 app.include_router(transactions_router)
 app.include_router(portfolio_coins_router)
+app.include_router(fetchers_router)
 
 
 # if __name__ == "__main__":
