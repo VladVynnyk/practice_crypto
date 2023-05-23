@@ -9,7 +9,7 @@ provides fetch functionality for fetching current data about cryptocurrencies fr
 
 ### For launching this project you need:
   1.Run command: `git clone "https://github.com/VladVynnyk/practice_crypto.git"`. \
-  2.Run command: `cd ./services/crypto_tracker`. 
-  3.Run command: `docker-compose build` and `docker-compose up -d`. 
+  2.Run command: `cd ./services/crypto_tracker`. \
+  3.Run command: `docker-compose build` and `docker-compose up -d`. \
 And now you can go to `http://127.0.0.1:8008/docs` to test the api.
   
